@@ -1,0 +1,50 @@
+"""
+Created on Sun Nov 16 2021
+
+@author: Asaad_Salem
+"""
+
+# 1st step: install and import modules
+
+import requests
+from bs4 import BeautifulSoup
+import csv
+from itertools import zip_longest
+
+brand = []
+name = []
+price = []
+
+# 2nd step: use requess to fetch the url
+page = requests.get('https://www.amazon.ae/s?k=running+shoes+for+men&crid=MAKMJVC47S6D&sprefix=RUNNING+SHOES+%2Caps%2C-1&ref=nb_sb_ss_ts-doa-p_1_13')
+
+# 3rd step: save page contnt/markup
+src = page.content
+#print(src)
+
+# 4th step: create soup object to parse content
+soup = BeautifulSoup(src, 'lxml')
+
+# 5th step: looping over the list containing all the required info 
+# i.e. Shoes name, Shoes category and Price
+# After that grapping this info into csv file
+
+csv_file = open('Products.csv', 'w')
+csv_writer = csv.writer(csv_file)
+csv_writer.writerow(['Product Name', 'Brand', 'Price'])
+
+for product in soup.find_all('div', class_= 'a-section a-spacing-medium a-text-center'):  
+   
+    Brand = product.find('span', class_='a-size-base-plus a-color-base').text
+    print(Brand)
+    
+    Name = product.find('span', class_='a-size-base-plus a-color-base a-text-normal').text
+    print(Name)
+    
+    Price = product.find('span', class_='a-offscreen').text
+    print(Price)
+    
+    csv_writer.writerow([Name, Brand, Price])
+
+
+csv_file.close()
